@@ -95,7 +95,7 @@ for (size_t i = 0; i < 15; i++){
 		int current = 0;
 		for (size_t j = 0; j < 10; j++)
 		{
-			if (students[i].marks[j]>=10)
+			if (students[i].marks[j]>=9)
 			{
 				current++;
 			}
@@ -110,6 +110,83 @@ for (size_t i = 0; i < 15; i++){
 		current = 0;
 	}
 }
+string getTeacherWithBestMarks(Teachers* teachers, Students* students, Class* class__ ) {
+	int summ[3];
+	int average[3];
+	const int count_of_students = 5;
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			for (int b = 0; b < 10; b++)
+			{
+				summ[i] += class__[i].students_of_class[j].marks[b];
+			}
+			
+		}
+		average[i] = summ[i] / count_of_students;
+	
+	}
+	int maxIndex = 0;
+	int max = average[0];
+	for (int i = 0; i < 3; i++)
+	{
+		if (max<average[i])
+		{
+			max = average[i];
+			maxIndex = i;
+		}
+	}
+	return class__[maxIndex].teachers_of_class.name + " " + class__[maxIndex].teachers_of_class.surname;
+}
+string getClassWithWorstMarks(Teachers* teachers, Students* students, Class* class__) {
+	int summ[3];
+	int average[3];
+	const int count_of_students = 5;
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			for (int b = 0; b < 10; b++)
+			{
+				summ[i] += class__[i].students_of_class[j].marks[b];
+			}
+
+		}
+		average[i] = summ[i] / count_of_students;
+
+	}
+	int minIndex = 0;
+	int min = average[0];
+	for (int i = 0; i < 3; i++)
+	{
+		if (min > average[i])
+		{
+			min = average[i];
+			minIndex = i;
+		}
+	}
+	return class__[minIndex].name;
+}
+void showRelatives(Students* students) {
+	string Realatives[15];
+	int count=0;
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 15; j++)
+		{
+			if (students[i].surname == students[j].surname && i!=j)
+			{
+				Realatives[count] = students[i].name + " " + students[i].surname + " - " + students[j].name + " " + students[j].surname;
+				count++;
+			}
+		}
+	}
+	for (int i = 0; i < count; i++)
+	{
+		cout << Realatives[i] << endl;
+	}
+}
 void showMenu(int& answer) {
 	cout << "==========================" << endl;
 	cout << "\tMENU" << endl;
@@ -117,6 +194,10 @@ void showMenu(int& answer) {
 	cout << "2.Show Teachers" << endl;
 	cout << "3.Show Classes" << endl;
 	cout << "4.Show Excelenters" << endl;
+	cout << "5.Show Teacher with best Class marks" << endl;
+	cout << "6.Show Class with worst Class marks" << endl;
+	cout << "7.Show Relatives" << endl;
+	cout << "8.Show Relatives" << endl;
 	cout << "0.Exit" << endl;
 	cin >> answer;
 	cout << "==========================" << endl;
@@ -171,6 +252,12 @@ int main() {
 			break;
 		case 4:
 			getExcellenters(students);
+		case 5:
+			cout << getTeacherWithBestMarks(teachers,students,class__) << endl;
+		case 6:
+			cout << getClassWithWorstMarks(teachers, students, class__) << endl;
+		case 7:
+			showRelatives(students);
 		default:
 			break;
 		}
