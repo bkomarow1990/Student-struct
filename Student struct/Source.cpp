@@ -61,7 +61,7 @@ int menu(string menu_items[], int size) {
 		}
 	} while (code != 13);
 	system("cls");
-	return key;
+	return key+1;
 }
 struct Date {
 	int day;
@@ -98,7 +98,8 @@ struct Teachers {
 	}
 };
 struct Class {
-	Students students_of_class[5];
+	int count;
+	Students* students_of_class;
 	Teachers teachers_of_class;
 	string name;
 	void print() {
@@ -114,8 +115,8 @@ struct Class {
 	}
 };
 void CreateTeachers(Teachers* teachers, int& names_index) {
-	string names[3] = { "Max","Serhii","Dasha"};
-	string surnames[3] = {"Kovalchuk","Yakubec","Korolchuk"};
+	string names[5] = { "Max","Serhii","Dasha","Boris","Dzherik"};
+	string surnames[5] = {"Kovalchuk","Yakubec","Korolchuk","Kaban","Dulko"};
 	teachers->name = names[names_index];
 	teachers->surname = surnames[names_index];
 	names_index += 1;
@@ -136,25 +137,35 @@ void CreateStudents(Students* student) {
 	student->data.month = rand() % 12 + 1;
 	student->data.year = rand() % 14+1990;
 }
-void CreateClass(Class* class_,Students* students,Teachers* teachers,int &score,int& names_index) {
-	string names[3] = { "B1","B2","B3" };
-	int teacher_index = rand() % 3;
-	int students_index;
-	for (size_t i = 0; i < 5; i++)
+void CreateClass(Class* class_,Students* students,Teachers* teachers,int &score,int& names_index,int& count_students,int &count_class) {
+	string names[10];
+	for (int i = 0; i < 10; i++)
 	{
-		students_index = rand() % 15;
-		class_->students_of_class[i]=students[i+score];
+		names[i] = "A" + i;
+	}
+	int count;
+	cin >> count;
+	class_->count = count;
+	int teacher_index = rand() % count_class;
+	int students_index=rand()%count_students;
+	
+	class_->students_of_class = new Students[count];
+	for (int i = 0; i < class_->count; i++)
+	{
+		CreateStudents(&class_->students_of_class[i]);
+		/*students_index = rand() % count_students;
+		class_->students_of_class[i]=students[i+score];*/
 	}
 	class_->teachers_of_class = teachers[teacher_index];
 	class_->name = names[names_index];
 	score += 5;
 	names_index += 1;
 }
-void getExcellenters(Students* students) {
+void getExcellenters(Students* students,int &count_students) {
 	cout << "Excellenters: " << endl;
-for (size_t i = 0; i < 15; i++){
+for (int i = 0; i < count_students; i++){
 		int current = 0;
-		for (size_t j = 0; j < 10; j++)
+		for (int j = 0; j < 10; j++)
 		{
 			if (students[i].marks[j]>=9)
 			{
@@ -171,11 +182,15 @@ for (size_t i = 0; i < 15; i++){
 		current = 0;
 	}
 }
-string getTeacherWithBestMarks(Teachers* teachers, Students* students, Class* class__ ) {
-	int summ[3];
-	int average[3];
+string getTeacherWithBestMarks(Teachers* teachers, Students* students, Class* class__ , int& count_class) {
+	int *summ=new int[count_class];
+	int *average=new int[count_class];
 	const int count_of_students = 5;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < count_class; i++)
+	{
+		summ[i] = 0;
+	}
+	for (int i = 0; i < count_class; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
@@ -200,11 +215,15 @@ string getTeacherWithBestMarks(Teachers* teachers, Students* students, Class* cl
 	}
 	return class__[maxIndex].teachers_of_class.name + " " + class__[maxIndex].teachers_of_class.surname;
 }
-string getClassWithWorstMarks(Teachers* teachers, Students* students, Class* class__) {
-	int summ[3];
-	int average[3];
+string getClassWithWorstMarks(Teachers* teachers, Students* students, Class* class__,int& count_class) {
+	int *summ=new int[count_class];
+	int *average=new int[count_class];
 	const int count_of_students = 5;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < count_class; i++)
+	{
+		summ[i] = 0;
+	}
+	for (int i = 0; i < count_class; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
@@ -229,13 +248,13 @@ string getClassWithWorstMarks(Teachers* teachers, Students* students, Class* cla
 	}
 	return class__[minIndex].name;
 }
-void showRelatives(Students* students) {
+void showRelatives(Students* students,int& count_students) {
 	cout << "=============showRelatives=============" << endl;
-	string Realatives[15];
+	string* Realatives=new string[count_students];
 	int count=0;
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < count_students; i++)
 	{
-		for (int j = 0; j < 15; j++)
+		for (int j = 0; j < count_students; j++)
 		{
 			if (students[i].surname == students[j].surname && i!=j)
 			{
@@ -265,13 +284,13 @@ void showRelatives(Students* students) {
 //	cout << "0.Exit" << endl;
 //	cin >> answer;
 //}
-void printStudentsBornOneDay(Students* students) {
+void printStudentsBornOneDay(Students* students, int& count_students) {
 	cout << "=============printStudentsBornOneDay=============" << endl;
 	int count = 0;
-	string StudentsOneDayBorn[15];
-	for (int i = 0; i < 15; i++)
+	string* StudentsOneDayBorn = new string[count_students];
+	for (int i = 0; i < count_students; i++)
 	{
-		for (int j = 0; j < 15; j++)
+		for (int j = 0; j < count_students; j++)
 		{
 			if (students[i].data.day == students[j].data.day && i != j)
 			{
@@ -286,14 +305,14 @@ void printStudentsBornOneDay(Students* students) {
 		cout<< StudentsOneDayBorn[i] << endl;
 	}
 }
-void getOldestStudent(Students* students) {
+void getOldestStudent(Students* students,int& count_students) {
 	cout << "============getOldestStudent==============" << endl;
-	float days[15];
-	for (int i = 0; i < 15; i++)
+	float* days=new float[count_students];
+	for (int i = 0; i < count_students; i++)
 	{
 		days[i] = 0;
 	}
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < count_students; i++)
 	{
 		days[i] += students[i].data.day;
 		days[i] += students[i].data.month*30;
@@ -301,7 +320,7 @@ void getOldestStudent(Students* students) {
 	}
 	int min = days[0];
 	int minIndex = 0;
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < count_students; i++)
 	{
 		if (days[i]<min)
 		{
@@ -314,8 +333,8 @@ void getOldestStudent(Students* students) {
 	students[minIndex].data.print();
 }
 int countOfStudentsWith85PlusMarks(Students* students) {
-	float average[15];
-	float summ[15];
+	float* average=new float[15];
+	float* summ = new float[15];
 	int count = 0;
 	for (int i = 0; i < 15; i++)
 	{
@@ -340,29 +359,35 @@ int countOfStudentsWith85PlusMarks(Students* students) {
 }
 int main() {
 	srand(time(NULL));
-	Size_Console(50, 50);
+	Size_Console(50, 30);
 	string Menu[] = { "1.Show Students","2.Show Teachers","3.Show Classes","4.Show Excelenters" ,
 	"5.Show Teacher with best Class marks","6.Show Class with worst Class marks",
 	"7.Show Relatives","8.Show Students what born in one day","9.Show Oldest Student","10.Show Count Student what have >8.5 average marks",
 	"0.Exit"
 	};
-	Students* students = new Students[15];
-	Teachers* teachers = new Teachers[3];
-	Class* class__ = new Class[3];
-	for (int i = 0; i < 15; i++)
+	int count_students = 0;
+	int count_class = 0;
+	cout << "ENTER COUNT STUDENTS (max 15)" << endl;
+	cin >> count_students;
+	cout << "ENTER COUNT CLASSES (max 5)" << endl;
+	cin >> count_class;
+	Students* students = new Students[count_students];
+	Teachers* teachers = new Teachers[count_class];
+	Class* class__ = new Class[count_class];
+	for (int i = 0; i < count_students; i++)
 	{
 		CreateStudents(&students[i]);
 	}
 	int names_index = 0;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < count_class; i++)
 	{
 		CreateTeachers(&teachers[i],names_index);
 	}
 	int score = 0;
 	names_index = 0;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < count_class; i++)
 	{
-		CreateClass(&class__[i],students,teachers,score,names_index);
+		CreateClass(&class__[i],students,teachers,score,names_index,count_students,count_class);
 	}
 	
 	int answer= menu(Menu, size(Menu));
@@ -372,7 +397,7 @@ int main() {
 			break;
 		case 1:
 			cout << "=============Students:=============" << endl;
-			for (int i = 0; i < 15; i++)
+			for (int i = 0; i < count_students; i++)
 			{
 				students[i].print();
 				cout << endl;
@@ -380,7 +405,7 @@ int main() {
 			break;
 		case 2:
 			cout << "=============Teachers:=============" << endl;
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < count_class; i++)
 			{
 				teachers[i].print();
 				cout << endl;
@@ -388,31 +413,31 @@ int main() {
 			break;
 		case 3:
 			cout << "=============Classes:=============" << endl;
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < count_class; i++)
 			{
 				class__[i].print();
 			}
 			break;
 		case 4:
 			cout << "=============getExcellenters=============" << endl;
-			getExcellenters(students);
+			getExcellenters(students,count_students);
 			break;
 		case 5:
 			cout << "=============getTeacherWithBestMarks=============" << endl;
-			cout << getTeacherWithBestMarks(teachers,students,class__) << endl;
+			cout << getTeacherWithBestMarks(teachers,students,class__,count_class) << endl;
 			break;
 		case 6:
 			cout << "=============getClassWithWorstMarks=============" << endl;
-			cout << getClassWithWorstMarks(teachers, students, class__) << endl;
+			cout << getClassWithWorstMarks(teachers, students, class__,count_class) << endl;
 			break;
 		case 7:
-			showRelatives(students);
+			showRelatives(students, count_students);
 			break;
 		case 8:
-			printStudentsBornOneDay(students);
+			printStudentsBornOneDay(students,count_students);
 			break;
 		case 9:
-			getOldestStudent(students);
+			getOldestStudent(students,count_students);
 			break;
 		case 10:
 			cout << "=============countOfStudentsWith8.5PlusMarks=============" << endl;
